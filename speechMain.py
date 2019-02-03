@@ -12,7 +12,7 @@ with sr.Microphone() as source:
     print(audio)
 
     try:
-        text = r.recognize_google(audio, language='ru-RU')
+        text = r.recognize_google(audio, language='en-EN')
         print(text)
         print('You have said : {}'.format(text))
     except:

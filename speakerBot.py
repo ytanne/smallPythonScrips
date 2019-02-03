@@ -1,6 +1,11 @@
 import os.path
 import sys
 import json
+import speech_recognition as sr
+
+r = sr.Recognizer()
+r.energy_threshold = 3000
+r.dynamic_energy_threshold = True
 
 try:
     import apiai
@@ -12,30 +17,44 @@ except ImportError:
 
 
 CLIENT_ACCESS_TOKEN = '79d37d11ef0845dab586f2643b0f738d'
-message2send = "Whazzup?"
 
+def dfAnswer(message2send):
+    print(message2send)
+    ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
+    request = ai.text_request()
+    request.lang = 'en'  # optional, default value equal 'en'
+    request.session_id = "TomAIbots"
+    request.query = message2send
+    response = request.getresponse()
+    responseJson = json.loads(response.read().decode('utf-8'))
+    answer = str(responseJson['result']['fulfillment']['speech'])
+    return answer
 
 def main():
+    while True:
+        x = input("Do you want to speak? 1 or 0\n")
 
-    print(message2send)
+        if x == '1':
+            with sr.Microphone() as source:
 
-    ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
+                r.adjust_for_ambient_noise(source, duration=0.5)
 
-    request = ai.text_request()
+                print('Say something')
 
-    request.lang = 'de'  # optional, default value equal 'en'
+                audio = r.record(source, duration=4)
 
-    request.session_id = "TomAIbots"
+                try:
+                    text = r.recognize_google(audio, language='en-EN')
+                except:
+                    text = 'Sorry, I did not understand'
 
-    request.query = message2send
+                answer = dfAnswer(text)
+                
+                command = "say '" + answer + "'"
 
-    response = request.getresponse()
-    
-    responseJson = json.loads(response.read().decode('utf-8'))
-
-    answer = str(responseJson['result']['fulfillment']['speech'])
-
-    print(answer)
+                os.system(command)
+        else:
+            break    
 
 
 if __name__ == '__main__':
