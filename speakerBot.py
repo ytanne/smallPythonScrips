@@ -22,7 +22,7 @@ def dfAnswer(message2send):
     print(message2send)
     ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
     request = ai.text_request()
-    request.lang = 'en'  # optional, default value equal 'en'
+    request.lang = 'ru'  # optional, default value equal 'en'
     request.session_id = "TomAIbots"
     request.query = message2send
     response = request.getresponse()
@@ -44,13 +44,15 @@ def main():
                 audio = r.record(source, duration=4)
 
                 try:
-                    text = r.recognize_google(audio, language='en-EN')
+                    text = r.recognize_google(audio, language='ru-RU')
                 except:
                     text = 'Sorry, I did not understand'
 
                 answer = dfAnswer(text)
                 
                 command = "say '" + answer + "'"
+
+                print("Ответ: " + command)
 
                 os.system(command)
         else:
